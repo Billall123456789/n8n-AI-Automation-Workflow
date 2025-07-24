@@ -1,0 +1,484 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 13
+            },
+            {
+              "triggerAtHour": 12
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1200,
+        -400
+      ],
+      "id": "ec73ef8c-4986-4f4d-9589-02368fdffcff",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "url": "https://rss.app/feeds/00SYhKcEItguARE4.xml",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        -940,
+        -400
+      ],
+      "id": "8618dec0-5767-46a9-acd2-4776337a9cc2",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ntL__0iDnmuLtNa4JiQKggrCvovOPBMxF_JIdZoCeFs",
+          "mode": "list",
+          "cachedResultName": "LinkedIn Job Apply Google Sheet  via n8n ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ntL__0iDnmuLtNa4JiQKggrCvovOPBMxF_JIdZoCeFs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Linkedin job",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ntL__0iDnmuLtNa4JiQKggrCvovOPBMxF_JIdZoCeFs/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{ $('Loop Over Items').item.json.title }}",
+            "Link": "={{ $('RSS Read').item.json.link }}",
+            "Date": "={{ $('RSS Read').item.json.pubDate }}",
+            "Job Description": "={{ $('OpenAI').item.json.message.content.job_description }}",
+            "Benefits": "={{ $('OpenAI').item.json.message.content.benefits }}",
+            "Company Name": "={{ $('OpenAI').item.json.message.content.company_name }}",
+            "Cover Letter": "={{ $json.message.content.cover_letter }}",
+            "Rating": "={{ $('OpenAI1').item.json.message.content.score }}"
+          },
+          "matchingColumns": [
+            "Link"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job Description",
+              "displayName": "Job Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Benefits",
+              "displayName": "Benefits",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Job Description",
+              "displayName": "Job Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cover Letter",
+              "displayName": "Cover Letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        888,
+        -400
+      ],
+      "id": "d8b17f0e-ccee-4cc9-8201-5c6c5cc1b393",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "avGx9OGPAmkmKrhR",
+          "name": "LinkedIn Job Apply Google Sheet  via n8n "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -460,
+        -400
+      ],
+      "id": "0479d2b4-77b1-4709-9d02-ad4f8733dbe1",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You're an intelligent bot capable of pulling out data from job listing site.",
+              "role": "system"
+            },
+            {
+              "content": "=Here is the job site: {{ $('Loop Over Items').item.json.link }}"
+            },
+            {
+              "content": "Please output the data in JSON format, using the following structure\n{\n\"company_name\": \"\",\n\"benefits\": \"\", //401K plan , medical etc. please separate by commas\n\"job_description\": \"\",\n\"location\": \"\",\n\"\": \"\",\n}",
+              "role": "assistant"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -240,
+        -400
+      ],
+      "id": "3397a310-a686-4064-9c44-98318130c977",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "tWQuG2jQDyuPN4cP",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You're an intelligent bot rating how closely a job listing is to a candidates skill set, on a 1-5 score.\nUse the following points system:\na) 3 points for skills matching, 1 point for mostly matching\nb) 2 points for it being a senior level, 1 point for junior level\nc) 1 point for it being a remote position\nd) 1 point for past job experience matches the job role\ne) 1 point if the skills on the resume align with the job\nf) 3 points if I meet the job qualifications posted based on my resume",
+              "role": "system"
+            },
+            {
+              "content": "=Here is the job listing details\n{{ $json.message.content.job_description }}\n{{ $('HTTP Request').item.json.data }}\n\nSample of resume\n\nProfessional Summary\nAs a certified data analyst and automation specialist, I help businesses automate repetitive tasks, connect fragmented systems, and drive growth with AI-enhanced workflows. With 8+ years in banking and 2+ years in data analytics and business automation, I use tools like n8n, Python, GoHighLevel, and OpenAI APIs to design and implement custom automation pipelines that improve efficiency, reduce costs, and scale operations.\n\nCore Competencies\nn8n & Make.com Automation (webhooks, custom API integrations, conditional flows)\n\nOpenAI, Claude, Gemini (prompt engineering, AI agents, GPT-based workflows)\n\nPython Scripting (data extraction, transformation, automation scripts)\n\nPower BI, Excel, SQL (business dashboards, KPIs, reporting automation)\n\nCRM Automation (GoHighLevel, Zapier, Google Workspace)\n\nBanking & Financial Process Automation\n\nEnd-to-End Workflow Optimization & Documentation\n\nExperience\nAI Automation Specialist\n3reesixty | May 2025 – Present\n\nDesigned and deployed advanced n8n workflows to automate sales, CRM, lead scoring, and marketing systems\n\nIntegrated OpenAI GPT, Gmail, Google Sheets, GoHighLevel, and Meta Ads via APIs\n\nReduced manual workload by 60% through custom prompt-driven automations\n\nBuilt AI-powered agents using n8n to respond to customer queries and update CRM in real-time\n\nData Analyst\n3reesixty | Oct 2024 – Present\n\nBuilt dynamic Power BI dashboards tracking financial KPIs and ad performance\n\nAutomated MIS reporting using Python and Excel macros\n\nCreated multi-source reports by integrating data from ads, CRM, and finance systems\n\nSocial Media Executive\n3reesixty | Aug 2023 – Sep 2024\n\nManaged marketing funnels integrated with GoHighLevel and n8n\n\nScheduled content automation using Meta + Google Sheets + custom scripts\n\nPrevious Banking Roles (2016–2023)\nHeld progressive positions at MCB Bank, UBL, BankIslami, and Habib Metro in trade finance, credit risk, operations, and MIS—paving the way for data and automation-focused problem solving.\n\nCertifications\n✅ Data Analyst in Python – DataCamp\n\n✅ Data Analyst in Power BI – DataCamp\n\n✅ AWS Cloud Concepts – DataCamp\n\n✅ Google Workspace Professional – LinkedIn Learning\n\n✅ Social Media Marketing Foundations – LinkedIn Learning\n\n✅ Introduction to Programming with Python – Microsoft\n\nEducation\nMBA – Supply Chain Management\nIqra University (2018 – 2023)\n\nBBA – Banking & Finance\nInstitute of Business & Technology (2011 – 2015)\n\nLanguages\nEnglish – Professional\n\nUrdu – Native\n\nTools & Platforms\nn8n, Python, OpenAI API, Zapier, GoHighLevel, Make (Integromat), SQL, Power BI, Excel, Meta Ads, Google Workspace, Gmail API, Notion, WhatsApp API"
+            },
+            {
+              "content": "Please return JSON data structured the following way:\n{\n\"score\": ...\n}",
+              "role": "assistant"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        136,
+        -400
+      ],
+      "id": "1bfb14c2-b690-4cc9-a344-9f8ce472083f",
+      "name": "OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "tWQuG2jQDyuPN4cP",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You're an intelligent bot perfect at creating cover letters for a job. Please take the candidates resume and create a customized cover letter to the job.",
+              "role": "system"
+            },
+            {
+              "content": "=Here is the job listing details\nTitle:{{ $('RSS Read').item.json.title }}\nDescription: {{ $('OpenAI').item.json.message.content.job_description }}\nName of Comapany:{{ $('OpenAI').item.json.message.content.company_name }}\nLocation:{{ $('OpenAI').item.json.message.content.location }}\n\nSample of resume\n\nProfessional Summary\nAs a certified data analyst and automation specialist, I help businesses automate repetitive tasks, connect fragmented systems, and drive growth with AI-enhanced workflows. With 8+ years in banking and 2+ years in data analytics and business automation, I use tools like n8n, Python, GoHighLevel, and OpenAI APIs to design and implement custom automation pipelines that improve efficiency, reduce costs, and scale operations.\n\nCore Competencies\nn8n & Make.com Automation (webhooks, custom API integrations, conditional flows)\n\nOpenAI, Claude, Gemini (prompt engineering, AI agents, GPT-based workflows)\n\nPython Scripting (data extraction, transformation, automation scripts)\n\nPower BI, Excel, SQL (business dashboards, KPIs, reporting automation)\n\nCRM Automation (GoHighLevel, Zapier, Google Workspace)\n\nBanking & Financial Process Automation\n\nEnd-to-End Workflow Optimization & Documentation\n\nExperience\nAI Automation Specialist\n3reesixty | May 2025 – Present\n\nDesigned and deployed advanced n8n workflows to automate sales, CRM, lead scoring, and marketing systems\n\nIntegrated OpenAI GPT, Gmail, Google Sheets, GoHighLevel, and Meta Ads via APIs\n\nReduced manual workload by 60% through custom prompt-driven automations\n\nBuilt AI-powered agents using n8n to respond to customer queries and update CRM in real-time\n\nData Analyst\n3reesixty | Oct 2024 – Present\n\nBuilt dynamic Power BI dashboards tracking financial KPIs and ad performance\n\nAutomated MIS reporting using Python and Excel macros\n\nCreated multi-source reports by integrating data from ads, CRM, and finance systems\n\nSocial Media Executive\n3reesixty | Aug 2023 – Sep 2024\n\nManaged marketing funnels integrated with GoHighLevel and n8n\n\nScheduled content automation using Meta + Google Sheets + custom scripts\n\nPrevious Banking Roles (2016–2023)\nHeld progressive positions at MCB Bank, UBL, BankIslami, and Habib Metro in trade finance, credit risk, operations, and MIS—paving the way for data and automation-focused problem solving.\n\nCertifications\n✅ Data Analyst in Python – DataCamp\n\n✅ Data Analyst in Power BI – DataCamp\n\n✅ AWS Cloud Concepts – DataCamp\n\n✅ Google Workspace Professional – LinkedIn Learning\n\n✅ Social Media Marketing Foundations – LinkedIn Learning\n\n✅ Introduction to Programming with Python – Microsoft\n\nEducation\nMBA – Supply Chain Management\nIqra University (2018 – 2023)\n\nBBA – Banking & Finance\nInstitute of Business & Technology (2011 – 2015)\n\nLanguages\nEnglish – Professional\n\nUrdu – Native\n\nTools & Platforms\nn8n, Python, OpenAI API, Zapier, GoHighLevel, Make (Integromat), SQL, Power BI, Excel, Meta Ads, Google Workspace, Gmail API, Notion, WhatsApp API"
+            },
+            {
+              "content": "Please return JSON data structured the following way:\n{\n\"cover_letter\": \"\"\n}",
+              "role": "assistant"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        512,
+        -400
+      ],
+      "id": "5e4a2913-c71c-4aad-b791-6745d0fdacbf",
+      "name": "OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "tWQuG2jQDyuPN4cP",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -700,
+        -400
+      ],
+      "id": "ba4ffeee-abcc-48c1-aeb9-c34755bf0a18",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1140,
+        -400
+      ],
+      "id": "c87c8209-b41b-4cdb-b2e2-21eaf8396afb",
+      "name": "Wait",
+      "webhookId": "2356513b-fafb-4283-afce-276d0a7315fd"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 420,
+        "width": 2620,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1260,
+        -600
+      ],
+      "id": "6643861b-dffd-48e0-a97b-849e9f94aeb6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Purpose: This workflow automates the job search process by continuously monitoring job postings, intelligently matching them to your skills and experience, and preparing application materials - essentially acting as a personal job search assistant that works 24/7.",
+        "height": 100,
+        "width": 500,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -340,
+        -560
+      ],
+      "id": "a2fa46ec-4090-4a4c-a204-f31f5c3a8c0f",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "OpenAI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "main": [
+        [
+          {
+            "node": "OpenAI2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9022fab5e98f888acca230e4dbcc338e09adfb5d320403903c6b819ba734e1d"
+  }
+}
