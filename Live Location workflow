@@ -1,0 +1,345 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2920,
+        160
+      ],
+      "id": "a9b7a748-e996-43dd-8427-f4b0334d335d",
+      "name": "WhatsApp Trigger",
+      "webhookId": "f0f419fa-82bd-46c4-9601-e608230e54bb",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "CgU55htt3xE6jowv",
+          "name": "WhatsApp OAuth account Bilal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('WhatsApp Trigger').item.json.metadata.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "=Nearby {{ $json.tags.amenity }}:  {{ $json.tags.name }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        2260,
+        -400
+      ],
+      "id": "ddb65f98-a612-4730-a3f3-93caff62be1f",
+      "name": "WhatsApp Business Cloud",
+      "webhookId": "ed4ff5e0-fd93-4e1e-8aea-2312991578a7",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "zdgVNtFwr346nygr",
+          "name": "WhatsApp account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2040,
+        -400
+      ],
+      "id": "62c518ff-a266-45d0-b184-170cfac504a4",
+      "name": "Loop Over Items",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "Purpose:\nTo build a cost-effective, location-based AI automation system using n8n, OpenStreetMap, and Overpass API that fetches real-time nearby places based on a user’s live location—helping logistics and delivery teams optimize routes, save fuel, and enhance doorstep delivery without relying on paid Google APIs.",
+        "height": 320,
+        "width": 1800,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        -260
+      ],
+      "id": "30227c78-2d54-417b-9fcb-4acd9d684ce1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        -160
+      ],
+      "id": "535833e4-db33-4b10-a481-86d5f25d8bc5",
+      "name": "WhatsApp Trigger1",
+      "webhookId": "f0f419fa-82bd-46c4-9601-e608230e54bb",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "CgU55htt3xE6jowv",
+          "name": "WhatsApp OAuth account Bilal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('WhatsApp Trigger1').item.json.metadata.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger1').item.json.messages[0].from }}",
+        "textBody": "=Nearby {{ $json.tags.amenity }}:  {{ $json.tags.name }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        820,
+        -160
+      ],
+      "id": "fd3d1d72-e248-44ca-971b-b5753d04bafb",
+      "name": "WhatsApp Business Cloud1",
+      "webhookId": "ed4ff5e0-fd93-4e1e-8aea-2312991578a7",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "zdgVNtFwr346nygr",
+          "name": "WhatsApp account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c35e3741-1fb1-43f7-be6d-e9af1459ef90",
+              "leftValue": "={{ $json.messages[0].type }}",
+              "rightValue": "location",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -280,
+        -160
+      ],
+      "id": "e529687e-66bd-4572-aa0b-b7223f3b2b28",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://overpass-api.de/api/interpreter",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "data",
+              "value": "=[out:json];(node[\"amenity\"=\"hospital\"](around:500,{{ $json.messages[0].location.latitude }},{{ $json.messages[0].location.longitude }});node[\"amenity\"=\"restaurant\"](around:500,{{ $json.messages[0].location.latitude }},{{ $json.messages[0].location.longitude }});node[\"shop\"=\"supermarket\"](around:500,{{ $json.messages[0].location.latitude }},{{ $json.messages[0].location.longitude }});node[\"amenity\"=\"place_of_worship\"](around:500,{{ $json.messages[0].location.latitude }},{{ $json.messages[0].location.longitude }}););out body;"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -60,
+        -160
+      ],
+      "id": "b212066c-96ac-4415-b65b-6fc148bdb6e8",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        600,
+        -160
+      ],
+      "id": "32c329df-7511-48e4-9419-2ae5d4961121",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "elements",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        380,
+        -160
+      ],
+      "id": "f9615e07-24e0-4b88-92a8-bfa5658d7d34",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = items[0].json;\n\n// Filter elements with amenity === 'hospital'\nconst filteredElements = original.elements.filter(\n  el => el.tags && el.tags.amenity === \"restaurant\"\n);\n\n// Return the same structure, just replace `elements`\nreturn [\n  {\n    json: {\n      ...original,\n      elements: filteredElements\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        -160
+      ],
+      "id": "0ed9d53c-02e4-40d3-9a8d-e1851ce2bedd",
+      "name": "Code4"
+    }
+  ],
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        []
+      ]
+    },
+    "WhatsApp Business Cloud": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "WhatsApp Business Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Business Cloud1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "WhatsApp Business Cloud1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9022fab5e98f888acca230e4dbcc338e09adfb5d320403903c6b819ba734e1d"
+  }
+}
