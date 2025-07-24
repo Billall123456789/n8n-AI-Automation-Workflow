@@ -1,0 +1,430 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "tbml",
+          "mode": "list",
+          "cachedResultName": "tbml"
+        },
+        "options": {
+          "pineconeNamespace": ""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        -624,
+        -160
+      ],
+      "id": "9c1d1678-ccb9-4a0b-b2d9-418a80e861c0",
+      "name": "Pinecone Vector Store Bilal Basheer",
+      "credentials": {
+        "pineconeApi": {
+          "id": "Ia3FDoQPTQzVzatT",
+          "name": "Pinecone Api Bilal Basheer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1KyOiB1_KaxxPpSEYJAdnuih6ht2-gVpR",
+          "mode": "list",
+          "cachedResultName": "TBML.docx",
+          "cachedResultUrl": "https://docs.google.com/document/d/1KyOiB1_KaxxPpSEYJAdnuih6ht2-gVpR/edit?usp=drivesdk&ouid=112488413372562159979&rtpof=true&sd=true"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -860,
+        40
+      ],
+      "id": "ea97858d-3565-4604-b8bf-f58f1e23a638",
+      "name": "Google Drive Bilal Basheer",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "7CEnScTcbLrDiyFn",
+          "name": "Google Drive Bilal Basheer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        62.5
+      ],
+      "id": "e3e1d07a-6fc2-443c-8695-1fbd95f8c927",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        260
+      ],
+      "id": "36a6eef2-892b-46ef-9120-67b45f5bdb06",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        60
+      ],
+      "id": "1b771230-503d-46f6-aa76-ac0fe036af0b",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "tWQuG2jQDyuPN4cP",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1080,
+        40
+      ],
+      "id": "579b1928-94a0-41c0-97d4-7f03acd47f30",
+      "name": "When clicking ‘Test workflow’",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "Purpose:\nA RAG bot with Pinecone helps you get smart, accurate answers by first looking through your uploaded documents (like PDFs or Word files), finding the most relevant information, and then using that information to answer your questions clearly and correctly.\n\nIt's like having a smart assistant who reads all your files and tells you exactly what you need to know without you reading everything yourself",
+        "width": 340,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1300,
+        1060
+      ],
+      "id": "377ec1d7-c0d7-4c59-aa52-0b461759c3a2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Purpose:\nThis workflow helps you upload your files from Google Drive to a smart storage system (called Pinecone) so that you can search and find information from those files quickly and easily, like asking questions and getting answers from them.",
+        "width": 280,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1220,
+        -240
+      ],
+      "id": "dc18a8c9-eb75-4f5e-8028-c837ff09bae7",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1080,
+        700
+      ],
+      "id": "e3fe6049-aaeb-4445-a801-b1fb68fcffa7",
+      "name": "WhatsApp Trigger",
+      "webhookId": "f0f419fa-82bd-46c4-9601-e608230e54bb",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "CgU55htt3xE6jowv",
+          "name": "WhatsApp OAuth account Bilal"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "={{ $('WhatsApp Trigger').item.json.metadata.phone_number_id }}",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        -364,
+        700
+      ],
+      "id": "90c53705-a7b1-40ce-a51c-4dbaae00d9a9",
+      "name": "WhatsApp Business Cloud",
+      "webhookId": "ed4ff5e0-fd93-4e1e-8aea-2312991578a7",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "zdgVNtFwr346nygr",
+          "name": "WhatsApp account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages[0].text.body }}",
+        "options": {
+          "systemMessage": "You are a customer support AI agent whose primary role is to assist users by simplifying and rephrasing every query before searching it in the Pinecone vector store, responding only based on the results found—never guessing or reasoning on your own—and if no answer is found, politely inform the user that the query has been escalated to a human agent; always respond to greetings and casual questions kindly (e.g., “Hello! How can I assist you today?” or “I’m just a virtual assistant, but I’m here and ready to help you!”), and when answering any query, explain it in the simplest, clearest, and easiest possible language so non-technical or non-banking users can understand easily."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -844,
+        700
+      ],
+      "id": "e804069b-19d7-4c62-9fcf-8257da2b2679",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "TBML",
+        "toolDescription": "This vector store contains key information from the State Bank of Pakistan’s “Framework for Managing Risks of Trade-Based Money Laundering (TBML) and Terrorist Financing (TF),” issued under FE Circular No. 04 on October 14, 2019. It includes regulatory guidelines for Authorized Dealers (banks) covering:\n\nCustomer Risk Profiling\n\nTransaction Monitoring & Reporting\n\nDue Diligence Procedures (Forms EIF/MIF/EFE/MFE)\n\nPricing Verification and Red Flags\n\nHigh-Risk Trade Transaction Handling\n\nSuspicious Transaction Reporting (STR)\n\nUse of Technology in AML/CFT Controls\n\nInternal Governance, Audit, and Staff Training\n\nCollaboration with External Stakeholders (Customs, Shipping, etc.)\n\nThis store is designed to help AI systems accurately answer queries related to Pakistan’s trade-related AML/CFT policies and TBML risk management practices. All responses should be based solely on the indexed content from this regulatory framework.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "tbml",
+          "mode": "list",
+          "cachedResultName": "tbml"
+        },
+        "topK": 100,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        -740,
+        922.5
+      ],
+      "id": "b05b6721-d8ce-4aa9-89ef-de8856efb88b",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "Ia3FDoQPTQzVzatT",
+          "name": "Pinecone Api Bilal Basheer"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-large",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -652,
+        1120
+      ],
+      "id": "1674a400-f2b4-4129-896b-2ce82d302cf5",
+      "name": "Embeddings OpenAI3",
+      "credentials": {
+        "openAiApi": {
+          "id": "tWQuG2jQDyuPN4cP",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -860,
+        920
+      ],
+      "id": "e7dd8cd5-ea00-457a-8273-5ce15ffe1c6b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yjVkEXz1usTK6erA",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 740,
+        "width": 1480,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1412,
+        -340
+      ],
+      "id": "4cf43bfc-9929-4e33-bc3b-753320fe2e6e",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 660,
+        "width": 1460,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1402,
+        600
+      ],
+      "id": "a3a98053-ee19-4894-8d9d-d7239f73de71",
+      "name": "Sticky Note3"
+    }
+  ],
+  "connections": {
+    "Google Drive Bilal Basheer": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store Bilal Basheer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store Bilal Basheer",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store Bilal Basheer",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Drive Bilal Basheer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Business Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9022fab5e98f888acca230e4dbcc338e09adfb5d320403903c6b819ba734e1d"
+  }
+}
