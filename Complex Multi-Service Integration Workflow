@@ -1,0 +1,1003 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1720,
+        260
+      ],
+      "id": "45f25296-7224-4f6d-a641-ddcd7966c451",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1TqPjl5FxhCDS3LBqP6BwRjpY1O24-N7ApDbDhrELGa4",
+          "mode": "list",
+          "cachedResultName": "fb video ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TqPjl5FxhCDS3LBqP6BwRjpY1O24-N7ApDbDhrELGa4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TqPjl5FxhCDS3LBqP6BwRjpY1O24-N7ApDbDhrELGa4/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "creation status",
+              "lookupValue": "to-do"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1420,
+        260
+      ],
+      "id": "093d2661-4ee6-4130-8f04-80044f05a2a0",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "idb5eERPnACZxEaA",
+          "name": "Aliza parsec"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[\n  {\n    \"voiceoverText\": \"Your narration script here.\",\n    \"imagePrompt\": \"Your descriptive image generation prompt here.\",\n    \"lowerThirdText\": \"Short lower third caption\"\n  }\n]\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        580
+      ],
+      "id": "449b3fc5-9258-4147-a1ca-e0adc7533871",
+      "name": "Structured Output Parser3"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"introVoiceoverText\": \"[INTRO_VOICEOVER_TEXT]\",\n  \"introImagePrompt\": \"[INTRO_IMAGE_PROMPT]\",\n  \"outroVoiceoverText\": \"[OUTRO_VOICEOVER_TEXT]\",\n  \"outroImagePrompt\": \"[OUTRO_IMAGE_PROMPT]\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -820,
+        600
+      ],
+      "id": "50125949-5729-453b-b4f0-28209911e9a4",
+      "name": "Structured Output Parser4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=you're an ai assistant designed to help with intros and outros for facebook videos for an online store for tech items, intro must be relevant to video idea \"\"{{ $('Google Sheets2').item.json.idea }}\"\". The color palette for the brand is as follow:\n\nElectric Blue: Represents tech, innovation, and trust. It's vibrant and grabs attention.\nHex: #007BFF\n\nCharcoal Gray: Adds a sense of professionalism and sophistication. It also pairs well with other colors.\nHex: #333333\n\nCyber Green: This adds a pop of color while still staying tech-forward and fresh.\nHex: #00FF7F\n\nDeep Purple: Represents creativity and modernity, adding depth and uniqueness to your brand.\nHex: #6A0DAD\n\nSilver/Metallic: A subtle metallic sheen to hint at high-tech gadgets and a futuristic feel.\nHex: #C0C0C0\n\nThe output must contain the following patameters:\n\nintroVoiceoverText – Write a short, energetic introduction to the video (it should be under 5 seconds). it must create excitement and curiosity about the video. keep in mind it is a video for facebook, so don't use terms like subscribe, bell-icon, channel etc\n\nintroImagePrompt- \"A visually engaging scene representing '{{ $('Google Sheets2').item.json.idea }}', styled with cinematic lighting and modern composition, ultra-realistic, clean background\" keep the color palette in mind\n\noutroVoiceoverText- create a relevant outro voiceover, keep in mind it is a video for facebook, so don't use terms like subscribe, bell-icon, channel etc (it should be under 5 seconds)\n\noutroImagePrompt- a tech related outro image prompt using the color palette\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -1000,
+        260
+      ],
+      "id": "fc8b269f-0439-4c95-a4b3-c00b43f06f2b",
+      "name": "intro & outro"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI assistant helping generate assets for an automated Facebook video based on the idea: “{{ $('Google Sheets2').item.json.idea }}”. The color palette for the brand is as follow:\n\nElectric Blue: Represents tech, innovation, and trust. It's vibrant and grabs attention.\nHex: #007BFF\n\nCharcoal Gray: Adds a sense of professionalism and sophistication. It also pairs well with other colors.\nHex: #333333\n\nCyber Green: This adds a pop of color while still staying tech-forward and fresh.\nHex: #00FF7F\n\nDeep Purple: Represents creativity and modernity, adding depth and uniqueness to your brand.\nHex: #6A0DAD\n\nSilver/Metallic: A subtle metallic sheen to hint at high-tech gadgets and a futuristic feel.\nHex: #C0C0C0\n\nInto-voiceover ({{ $('intro & outro').item.json.output.introVoiceoverText }}), be sure not to repeat that in any clips\n\nEach video must include the following elements:\n\nvoiceoverText (string) – A compelling, natural-sounding narration script (1-2 sentences) that introduces or explains the idea (it should be under 5 seconds).\n\nimagePrompt (string) – A descriptive prompt suitable for generating a high-quality AI image that visually represents the idea, keep the color pallette in mind.\n\nlowerThirdText (string) – A short caption (max 8 words) summarizing the voiceover, to be displayed as on-screen text.\n\nAlso make sure there are 5 outputs no more, no less",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        40,
+        260
+      ],
+      "id": "c462793b-00bf-4cc9-a0df-70c914bb1c82",
+      "name": "content generator"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        320,
+        960
+      ],
+      "id": "ff70e8f7-5151-4ee9-b0a6-1e278158ad78",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yjVkEXz1usTK6erA",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "you have access to two tools one to generate an image for each clip (A total of 5 clips) and the other one to generate voiceovers for the clips forward the request accordingly to both tools to get the generated images and voiceovers"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        820,
+        260
+      ],
+      "id": "60541c9e-3e7b-4205-bd28-5392033c354d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=you have access to two tools one to generate intro and outro images for the video and the other one to generate intro and outro voiceover forward the request accordingly to both tools to get the generated images and voieeovers\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -500,
+        260
+      ],
+      "id": "a8b25eed-c72c-45eb-811d-1210c36ca850",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "name": "sub_intro_outro_img_generation_agent",
+        "description": "call this tool to generate an intro/outro image and get the url",
+        "workflowId": {
+          "__rl": true,
+          "value": "nSRKDYpqSqQUwGXN",
+          "mode": "list",
+          "cachedResultName": "sub intro/outro img generation agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "introImagePrompt": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('introImagePrompt', ``, 'string') }}",
+            "outroImagePrompt": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('outroImagePrompt', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "query"
+          ],
+          "schema": [
+            {
+              "id": "introImagePrompt",
+              "displayName": "introImagePrompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "outroImagePrompt",
+              "displayName": "outroImagePrompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -380,
+        500
+      ],
+      "id": "1b5693d5-be05-4e22-9605-b2a48cde4a1a",
+      "name": "sub intro/outro img generation agent"
+    },
+    {
+      "parameters": {
+        "name": "sub_intro_outro_voiceover_generation_agent",
+        "description": "call this tool to generate voice over and get the result in json",
+        "workflowId": {
+          "__rl": true,
+          "value": "cixIkcQ6r854UOWs",
+          "mode": "list",
+          "cachedResultName": "sub intro/outro voiceover generation agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "introVoiceoverText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('introVoiceoverText', ``, 'string') }}",
+            "outroVoiceoverText": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('outroVoiceoverText', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "query"
+          ],
+          "schema": [
+            {
+              "id": "introVoiceoverText",
+              "displayName": "introVoiceoverText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "outroVoiceoverText",
+              "displayName": "outroVoiceoverText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        520
+      ],
+      "id": "3af557fd-d0ea-4630-8a4c-2bfe821b1e87",
+      "name": "sub intro/outro voiceover generation agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"intro_img\": {\n    \"url\": \"...\"\n  },\n  \"outro_img\": {\n    \"url\": \"...\"\n  },\n  \"intro_voiceover\": {\n    \"url\": \"...\"\n  },\n  \"outro_voiceover\": {\n    \"url\": \"...\"\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -120,
+        400
+      ],
+      "id": "c30d51f8-a988-46d8-850f-6506ff23de6f",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "name": "image_generator_tool",
+        "description": "call this tool to generate images for the video",
+        "workflowId": {
+          "__rl": true,
+          "value": "jdezo1MUP1zb0VV5",
+          "mode": "list",
+          "cachedResultName": "sub clip img generation agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "imagePrompt1": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('imagePrompt1', ``, 'string') }}",
+            "imagePrompt2": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('imagePrompt2', ``, 'string') }}",
+            "imagePrompt3": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('imagePrompt3', ``, 'string') }}",
+            "imagePrompt4": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('imagePrompt4', ``, 'string') }}",
+            "imagePrompt5": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('imagePrompt5', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "imagePrompt1",
+              "displayName": "imagePrompt1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "imagePrompt2",
+              "displayName": "imagePrompt2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "imagePrompt3",
+              "displayName": "imagePrompt3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "imagePrompt4",
+              "displayName": "imagePrompt4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "imagePrompt5",
+              "displayName": "imagePrompt5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1060,
+        480
+      ],
+      "id": "dc00bac2-d3b0-4859-97ad-61dc7d708647",
+      "name": "image generating agent"
+    },
+    {
+      "parameters": {
+        "name": "voiceover_generator_agent",
+        "description": "call this to get voiceovers for the video",
+        "workflowId": {
+          "__rl": true,
+          "value": "MuxbYAtvrs5hJ19O",
+          "mode": "list",
+          "cachedResultName": "sub clip voiceover generation agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "voiceoverText1": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('voiceoverText1', ``, 'string') }}",
+            "voiceoverText2": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('voiceoverText2', ``, 'string') }}",
+            "voiceoverText3": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('voiceoverText3', ``, 'string') }}",
+            "voiceoverText4": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('voiceoverText4', ``, 'string') }}",
+            "voiceoverText5": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('voiceoverText5', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "voiceoverText1",
+              "displayName": "voiceoverText1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "voiceoverText2",
+              "displayName": "voiceoverText2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "voiceoverText3",
+              "displayName": "voiceoverText3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "voiceoverText4",
+              "displayName": "voiceoverText4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "voiceoverText5",
+              "displayName": "voiceoverText5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        1180,
+        480
+      ],
+      "id": "b8251a4d-a7da-4d24-a64e-1c28d87b0d9e",
+      "name": "Voiceover generating agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[\n  {\n    \"img1\": { \"url\": \"https://i.ibb.co/qYnBK5NM/f546e28d3b44.jpg\" },\n    \"img2\": { \"url\": \"https://i.ibb.co/MwyTDC0/e173cbcfc85b.jpg\" },\n    \"img3\": { \"url\": \"https://i.ibb.co/zDbs1WM/228c6596316b.jpg\" },\n    \"img4\": { \"url\": \"https://i.ibb.co/zkGRVHP/f5594194178a.jpg\" },\n    \"img5\": { \"url\": \"https://i.ibb.co/Xxp1BX6m/51a94d4ed4e0.jpg\" },\n    \"clip1audio\": { \"url\": \"https://drive.google.com/uc?id=1hrB40l50dFyPiPH-GG4picVnXA_IJUcM&export=download\" },\n    \"clip2audio\": { \"url\": \"https://drive.google.com/uc?id=1xf8JrLmIwNGwNshLrm9cVtFPy7cV06Cf&export=download\" },\n    \"clip3audio\": { \"url\": \"https://drive.google.com/uc?id=1sgFKBrWeNcjFtWgbc9aHayYFLiMDQ1Jn&export=download\" },\n    \"clip4audio\": { \"url\": \"https://drive.google.com/uc?id=1rxfllwj3nEZ_X4K2J4oJY2S5lID2_Rme&export=download\" },\n    \"clip5audio\": { \"url\": \"https://drive.google.com/uc?id=1xQiwu1gVP_CLOGA51OstbbzQutoR3FlS&export=download\" }\n  }\n]\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1300,
+        480
+      ],
+      "id": "01455cab-83ae-4111-bc29-c329537482af",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.shotstack.io/stage/render",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "gxqyRaviblXUoTBlQ6fjO5sTadDqpvpyC7cGvCvH"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"timeline\": {\n    \"background\": \"#000000\",\n    \"tracks\": [\n      {\n        \"clips\": [\n          {\n            \"asset\": {\n              \"type\": \"text\",\n              \"text\": \"{{ $('Google Sheets2').item.json.idea }}\",\n              \"font\": {\n                \"family\": \"Roboto Black\",\n                \"size\": 72,\n                \"color\": \"#FFFFFF\"\n              },\n              \"width\": 1000,\n              \"height\": 300\n            },\n            \"start\": 0,\n            \"length\": 5,\n            \"position\": \"top\"\n          },\n          {\n            \"asset\": {\n              \"type\": \"text\",\n              \"text\": \"{{ $('content generator').item.json.output[0].lowerThirdText }}\",\n              \"font\": {\n                \"family\": \"Roboto Black\",\n                \"size\": 72,\n                \"color\": \"#FFFFFF\"\n              },\n              \"width\": 1000,\n              \"height\": 200\n            },\n            \"start\": 5,\n            \"length\": 5,\n            \"position\": \"bottom\"\n          },\n          {\n            \"asset\": {\n              \"type\": \"text\",\n              \"text\": \"{{ $('content generator').item.json.output[1].lowerThirdText }}\",\n              \"font\": {\n                \"family\": \"Roboto Black\",\n                \"size\": 72,\n                \"color\": \"#FFFFFF\"\n              },\n              \"width\": 1000,\n              \"height\": 200\n            },\n            \"start\": 10,\n            \"length\": 5,\n            \"position\": \"bottom\"\n          },\n          {\n            \"asset\": {\n              \"type\": \"text\",\n              \"text\": \"{{ $('content generator').item.json.output[2].lowerThirdText }}\",\n              \"font\": {\n                \"family\": \"Roboto Black\",\n                \"size\": 72,\n                \"color\": \"#FFFFFF\"\n              },\n              \"width\": 1000,\n              \"height\": 200\n            },\n            \"start\": 15,\n            \"length\": 5,\n            \"position\": \"bottom\"\n          },\n          {\n            \"asset\": {\n              \"type\": \"text\",\n              \"text\": \"{{ $('content generator').item.json.output[3].lowerThirdText }}\",\n              \"font\": {\n                \"family\": \"Roboto Black\",\n                \"size\": 72,\n                \"color\": \"#FFFFFF\"\n              },\n              \"width\": 1000,\n              \"height\": 200\n            },\n            \"start\": 20,\n            \"length\": 5,\n            \"position\": \"bottom\"\n          },\n          {\n            \"asset\": {\n              \"type\": \"text\",\n              \"text\": \"{{ $('content generator').item.json.output[4].lowerThirdText }}\",\n              \"font\": {\n                \"family\": \"Roboto Black\",\n                \"size\": 72,\n                \"color\": \"#FFFFFF\"\n              },\n              \"width\": 1000,\n              \"height\": 200\n            },\n            \"start\": 25,\n            \"length\": 5,\n            \"position\": \"bottom\"\n          },\n          {\n            \"asset\": {\n              \"type\": \"text\",\n              \"text\": \"Thanks for watching\",\n              \"font\": {\n                \"family\": \"Roboto Black\",\n                \"size\": 46,\n                \"color\": \"#FFFFFF\"\n              },\n              \"width\": 1000,\n              \"height\": 300\n            },\n            \"start\": 30,\n            \"length\": 5,\n            \"position\": \"center\"\n          }\n        ]\n      },\n      {\n        \"clips\": [\n          { \"asset\": { \"type\": \"image\", \"src\": \"{{ $('AI Agent1').item.json.output.intro_img.url }}\" }, \"start\": 0, \"length\": 5 },\n          { \"asset\": { \"type\": \"image\", \"src\": \"{{ $json.output[0].img1.url }}\" }, \"start\": 5, \"length\": 5 },\n          { \"asset\": { \"type\": \"image\", \"src\": \"{{ $json.output[0].img2.url }}\" }, \"start\": 10, \"length\": 5 },\n          { \"asset\": { \"type\": \"image\", \"src\": \"{{ $json.output[0].img3.url }}\" }, \"start\": 15, \"length\": 5 },\n          { \"asset\": { \"type\": \"image\", \"src\": \"{{ $json.output[0].img4.url }}\" }, \"start\": 20, \"length\": 5 },\n          { \"asset\": { \"type\": \"image\", \"src\": \"{{ $json.output[0].img5.url }}\" }, \"start\": 25, \"length\": 5 },\n          { \"asset\": { \"type\": \"image\", \"src\": \"{{ $('AI Agent1').item.json.output.outro_img.url }}\" }, \"start\": 30, \"length\": 5 }\n        ]\n      },\n      {\n        \"clips\": [\n          { \"asset\": { \"type\": \"audio\", \"src\": \"{{ $('AI Agent1').item.json.output.intro_voiceover.url }}\" }, \"start\": 0, \"length\": 5 },\n          { \"asset\": { \"type\": \"audio\", \"src\": \"{{ $json.output[0].clip1audio.url }}\" }, \"start\": 5, \"length\": 5 },\n          { \"asset\": { \"type\": \"audio\", \"src\": \"{{ $json.output[0].clip2audio.url }}\" }, \"start\": 10, \"length\": 5 },\n          { \"asset\": { \"type\": \"audio\", \"src\": \"{{ $json.output[0].clip3audio.url }}\" }, \"start\": 15, \"length\": 5 },\n          { \"asset\": { \"type\": \"audio\", \"src\": \"{{ $json.output[0].clip4audio.url }}\" }, \"start\": 20, \"length\": 5 },\n          { \"asset\": { \"type\": \"audio\", \"src\": \"{{ $json.output[0].clip5audio.url }}\" }, \"start\": 25, \"length\": 5 },\n          { \"asset\": { \"type\": \"audio\", \"src\": \"{{ $('AI Agent1').item.json.output.outro_voiceover.url }}\" }, \"start\": 30, \"length\": 5 }\n        ]\n      }\n    ]\n  },\n  \"output\": {\n    \"format\": \"mp4\",\n    \"resolution\": \"1080\",\n    \"aspectRatio\": \"4:5\"\n  }\n}\n",
+        "options": {
+          "redirect": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1520,
+        220
+      ],
+      "id": "1362f0a2-3b9f-4182-b77d-cebe44c9737e",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.shotstack.io/stage/render/{{ $json.response.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "gxqyRaviblXUoTBlQ6fjO5sTadDqpvpyC7cGvCvH"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2120,
+        220
+      ],
+      "id": "55bb2158-d1e3-459b-a682-313baccd88b2",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1180,
+        260
+      ],
+      "id": "14044edf-1531-4ba4-a7dd-773ccf589779",
+      "name": "Wait",
+      "webhookId": "f7aea930-90d1-4ecc-ad00-06d8768ba0cd"
+    },
+    {
+      "parameters": {
+        "amount": 90
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1740,
+        220
+      ],
+      "id": "7ae209fc-48de-41bb-a322-c05498620278",
+      "name": "Wait1",
+      "webhookId": "e66f4090-a808-430e-853a-ea9f6eb1427b"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "381df808-3ab0-45c8-97ce-968baf55f8c0",
+              "name": "video url",
+              "value": "={{ $json.response.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2340,
+        220
+      ],
+      "id": "7c5f0dce-6b5a-4b96-962c-7c1210017afb",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json['video url'] }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2560,
+        220
+      ],
+      "id": "9a9d279a-c0d7-490b-9515-58c107273310",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Google Sheets2').item.json.idea }}.mp4",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1fAWq-1aFLBAKCeofBQO6R0oPPZfndq2U",
+          "mode": "list",
+          "cachedResultName": "facebook videos",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1fAWq-1aFLBAKCeofBQO6R0oPPZfndq2U"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2780,
+        220
+      ],
+      "id": "74a267a2-b2b0-4ff9-b0b0-bcd52625d232",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "AD6rNIvWrt0mBKH1",
+          "name": "Google Drive account - Aliza"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1TqPjl5FxhCDS3LBqP6BwRjpY1O24-N7ApDbDhrELGa4",
+          "mode": "list",
+          "cachedResultName": "fb video ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TqPjl5FxhCDS3LBqP6BwRjpY1O24-N7ApDbDhrELGa4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TqPjl5FxhCDS3LBqP6BwRjpY1O24-N7ApDbDhrELGa4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "idea": "={{ $('Google Sheets2').item.json.idea }}",
+            "creation status": "done",
+            "Drive Link": "={{ $json.webContentLink }}"
+          },
+          "matchingColumns": [
+            "idea"
+          ],
+          "schema": [
+            {
+              "id": "idea",
+              "displayName": "idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "creation status",
+              "displayName": "creation status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "posting status",
+              "displayName": "posting status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Drive Link",
+              "displayName": "Drive Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        3000,
+        220
+      ],
+      "id": "de2a2f7e-3b94-4df9-8d58-847e0993b88c",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "idb5eERPnACZxEaA",
+          "name": "Aliza parsec"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        260
+      ],
+      "id": "728c58c1-7005-44b3-91bf-0001b61a6c63",
+      "name": "Wait2",
+      "webhookId": "2f90fba8-3b61-4c9a-8955-2dfbf4933d62"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "intro & outro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser3": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "content generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser4": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "intro & outro",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "intro & outro": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "content generator": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "intro & outro",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "content generator",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "content generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sub intro/outro img generation agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sub intro/outro voiceover generation agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "image generating agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Voiceover generating agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9022fab5e98f888acca230e4dbcc338e09adfb5d320403903c6b819ba734e1d"
+  }
+}
