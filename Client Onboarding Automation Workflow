@@ -1,0 +1,431 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Onboarding form",
+        "formDescription": "Please will the from below\n* indicates required fields",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "First name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Last name"
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Industry",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "What is your goal?"
+            },
+            {
+              "fieldLabel": "anything else we should know?"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -380,
+        240
+      ],
+      "id": "451a2df6-445c-4e1f-ac25-40df7f45a0fc",
+      "name": "On form submission",
+      "webhookId": "9565b720-6ce6-4bd9-bbfa-3238013ffe18"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=create a warm welcoming email for our new client based on their information, we need the email to be concise and friendly, it should also be personalized according to their industry. The details are as follow:\n\nFirst name: {{ $json['First name'] }}\nLast name:{{ $json['Last name'] }}\nIndustry: {{ $json.Industry }}\nGoal: {{ $json['What is your goal?'] }}\nClient has added an additional message: {{ $json['anything else we should know?'] }}\n\n\nBe sure to signoff the email with \"<ENTER YOUR NAME HERE>\", from \"<ENTER YOUR AGENCY NAME HERE>\". Don't ever throw off variable when signing off, we don't want it to be [Your name], [your organization] or [your company details, etc]\n\nOutput this information into 3 different fields:\nSubject: the email's subject\nBody: The email's body\nEmail: {{ $json.Email }}\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -160,
+        -60
+      ],
+      "id": "00990228-9931-4cb6-a3c9-d6ce7f1055ab",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -72,
+        160
+      ],
+      "id": "edd96b97-a5f8-4b06-a318-ae785c934698",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "tWQuG2jQDyuPN4cP",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "parse the Json separately and output the parameters seperately:\n\nSubject\n\nBody\n\nEmail"
+            },
+            {
+              "content": "={{ $json.output }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        216,
+        40
+      ],
+      "id": "55b43df0-6ff2-49f8-b855-766ddcd7c22e",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "tWQuG2jQDyuPN4cP",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.message.content.Email }}",
+        "subject": "={{ $json.message.content.Subject }}",
+        "emailType": "text",
+        "message": "={{ $json.message.content.Body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        592,
+        40
+      ],
+      "id": "aedfc78b-fdb3-49a2-a932-a0b5643263d4",
+      "name": "Gmail",
+      "webhookId": "d54d98f3-d05a-4744-b09b-90575a19987d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "pMnG9m4SbdTbYudJ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Take the client information provided and create a summary of their client profile. Following are the details:\n\nName: {{ $json['First name'] }} {{ $json['Last name'] }}\nIndustry: {{ $json.Industry }} \nExpectations: {{ $json['What is your goal?'] }}\nEmail: {{ $json.Email }}\n\n\nShow the summary in following template:\nName:\nEmail:\nSummary:",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -160,
+        340
+      ],
+      "id": "e0aa04bb-3b77-44e2-b679-5573ec1ef695",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -72,
+        560
+      ],
+      "id": "39c23a74-28d7-4f7c-831e-641b74bfebc5",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "tWQuG2jQDyuPN4cP",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Parse the json output into 3 separate parameters:\nName:\nEmail:\nSummary:"
+            },
+            {
+              "content": "={{ $json.output }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        216,
+        440
+      ],
+      "id": "ea0ca086-7a66-4927-9d48-97a7b3d1f3ff",
+      "name": "OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "tWQuG2jQDyuPN4cP",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1gzXz2iHIoU6LgjKWkK3qU9FMVo32CENSbCygHFL8MFY",
+          "mode": "list",
+          "cachedResultName": "New clients",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gzXz2iHIoU6LgjKWkK3qU9FMVo32CENSbCygHFL8MFY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gzXz2iHIoU6LgjKWkK3qU9FMVo32CENSbCygHFL8MFY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.message.content.Name }}",
+            "Email": "={{ $json.message.content.Email }}",
+            "Summary": "={{ $json.message.content.Summary }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        592,
+        440
+      ],
+      "id": "9d9ebcad-92b4-42f5-aa33-07322ff5d4ac",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "idb5eERPnACZxEaA",
+          "name": "Aliza parsec"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 920,
+        "width": 1800
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        -220
+      ],
+      "id": "512d9414-7739-4d33-9c4c-7ed418f911e5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "This n8n workflow automates client onboarding by collecting form responses, generating a personalized welcome email, and storing client summaries in Google Sheets. It uses OpenAI to create tailored email content and profile summaries.\n\n\n\n\n\n\n\n\n\n",
+        "width": 300,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -620,
+        -80
+      ],
+      "id": "8ee40bca-5e0a-4b19-9469-f54664410d50",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "OpenAI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9022fab5e98f888acca230e4dbcc338e09adfb5d320403903c6b819ba734e1d"
+  }
+}
