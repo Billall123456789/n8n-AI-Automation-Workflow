@@ -1,0 +1,309 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "trigger": [
+          "app_mention"
+        ],
+        "channelId": {
+          "__rl": true,
+          "value": "https://app.slack.com/client/T07QLRS7JM8/C07Q69QNCP9",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        40,
+        40
+      ],
+      "id": "b871cf71-a548-470f-a2bd-79503e6b49db",
+      "name": "Slack Trigger",
+      "webhookId": "482e502e-ae25-47b7-971b-153450e34bd7",
+      "credentials": {
+        "slackApi": {
+          "id": "2yssgSdJy7StAw9D",
+          "name": "Slack account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=You are a personal assistant AI Agent designed to handle various tasks efficiently. Your primary role is to manage contacts, emails, and calendar events for the user. You have access to three tools to help you fulfill requests:\n\n\nEmail Agent: Use this for handling all email-related actions, like sending messages, setting up replies, or forwarding emails.\n\nCalendar Agent: Use this for scheduling, updating, or managing calendar events.\n\nResearch Agent: Use this when the user is asking about something genreral knowledge related and it has nothin to do with the calendar and email agent\n\n\nWhen a task requires using one or more of these tools, make sure to identify which tool is most appropriate, pass along the relevant details, and execute the actions needed to complete the task. Your goal is to be proactive, precise, and organized in managing these resources to provide a smooth experience for the user.\n\nHere is the current time/date: {{ $now.format('DD')}}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        332,
+        40
+      ],
+      "id": "04c31be0-31db-4950-9891-c51aaa4633eb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "https://app.slack.com/client/T07QLRS7JM8/C07Q69QNCP9",
+          "mode": "url"
+        },
+        "text": "={{ $json.output }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        820,
+        40
+      ],
+      "id": "e45cb4d8-ea89-4739-8c52-7ed14611606c",
+      "name": "Slack",
+      "webhookId": "0b0a44e2-e39d-46e4-bb75-7adad1bd8f1a",
+      "credentials": {
+        "slackApi": {
+          "id": "2yssgSdJy7StAw9D",
+          "name": "Slack account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -120,
+        260
+      ],
+      "id": "ea453d2c-2e04-4793-a85f-d4d71bb96825",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "tWQuG2jQDyuPN4cP",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "Email_agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "H55CztBSpapdzw0x",
+          "mode": "list",
+          "cachedResultName": "Email agent (Sub-workflow) sends and reads your email"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        500,
+        260
+      ],
+      "id": "fde5fb48-bb3c-452d-8ea5-085e14e2bd1c",
+      "name": "Email agent"
+    },
+    {
+      "parameters": {
+        "name": "Calendar_agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "BtVMWAXQhnO8dzGT",
+          "mode": "list",
+          "cachedResultName": "calendar agent (sub-workflow) can get and create calendar events"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        740,
+        260
+      ],
+      "id": "0832870d-52b0-4fac-904e-de1bfe3d9757",
+      "name": "Calendar Agent"
+    },
+    {
+      "parameters": {
+        "name": "research_agent",
+        "workflowId": {
+          "__rl": true,
+          "value": "lyIp6MYZbxnRROA5",
+          "mode": "list",
+          "cachedResultName": "Research agent (sub-workflow) takes input and get the relevant ai based output using wikipedia, hacker news and SerpApi"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        980,
+        260
+      ],
+      "id": "047390ac-ea2a-47d9-9974-cf2e03a7c5ac",
+      "name": "Research Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Slack Trigger').item.json.client_msg_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        180,
+        260
+      ],
+      "id": "5f8978a3-6f82-451e-bd75-577c13e6a1a2",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 620,
+        "width": 1400,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -160
+      ],
+      "id": "7fc818ee-c652-45eb-9ddc-2e6fc61e7af1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "A Slack bot that automatically sends emails, manages calendar events, or finds information when mentioned in a message.\n",
+        "width": 220
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -120
+      ],
+      "id": "c5e10874-3440-43d8-a513-06d53927f4aa",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "Slack Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9022fab5e98f888acca230e4dbcc338e09adfb5d320403903c6b819ba734e1d"
+  }
+}
