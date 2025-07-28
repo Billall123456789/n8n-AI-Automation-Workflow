@@ -1,0 +1,898 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a creative strategist and AI specialized in social media content creation. Generate 10 unique Instagram image-based post ideas for an online tech shop called \"Virtual Bazaar\", which sells tech gadgets, accessories, and electronics.\n\nYour goal is to create highly engaging, visually-driven post ideas that align with brand identity and encourage shares, saves, and comments, by delivering value, relevance, and visual appeal.\n\nUse today’s date as a creative anchor: {{ $now }}\n\n🎨 Branding Guidelines\nColor Palette\n\nPrimary: Electric Blue #1F51FF\n\nSecondary: Charcoal Black #1C1C1C\n\nAccent: Neon Green #39FF14, Silver #C0C0C0\n\nBackground: Light Gray #F5F5F5\n\nDesign Aesthetic\n\nFuturistic and sleek\n\nMinimalist with clean lines\n\nTech-themed icons and illustrations\n\nBold typography with glitch or digital styles\n\n🧠 Content Focus\nEach idea must be designed as a single image-based Instagram post (not a video or carousel).\n\nInclude a varied mix of these post types:\n\nProduct highlights\n\nTech tips\n\nLifestyle integration\n\nLimited-time deals or countdowns\n\nFeature comparisons\n\nHow-to guides\n\nTech trends or fun facts\n\nVisual storytelling or aesthetic layouts\n\n📦 Output Format\nReturn the result in JSON format using this exact structure:\n\n{\n  \"ideas\": [\n    {\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"caption\": \"string\"\n    }\n  ]\n}\nThe ideas array must contain exactly 10 entries\n\nEach entry must have:\n\n\"title\": A short, catchy name for the post (3–6 words)\n\n\"description\": A natural-language visual prompt with minimal on-image text\n\n\"caption\": A fully written Instagram caption in fluent English (no variables or placeholders)\n\n⚠️ description Field Usage\nThe description field will be used as the image generation prompt. Therefore:\n\nIt must be a clear and specific description of the image to be generated\n\nEmphasize visual elements, layout, scene, and mood\n\nLimit the amount of text included in the image — keep it minimal or none, if possible\n\nAny text on the image must be short, real, grammatically correct, and directly relevant\n\nAvoid long quotes, paragraphs, or multiple lines of text\n\nDo not include lorem ipsum, gibberish, or random characters\n\nDo not include caption-style content or hashtags in the description\n\n❌ DO NOT:\nDo not include video or carousel formats\n\nDo not repeat ideas or themes\n\nDo not use placeholder variables like [product name], [item], etc.\n\nDo not include gibberish, lorem ipsum, or nonsensical text in visuals (e.g., \"Eemssinfblittenl\")\n\nDo not overload the visual with text — keep it minimal, clean, and clear\n\nDo not return fewer or more than 10 ideas\n\nDo not omit any fields — each idea must contain a title, description, and caption",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        220,
+        100
+      ],
+      "id": "8efe0e6b-353c-4754-8106-ded5a75d9ff7",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "test-id"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        300,
+        320
+      ],
+      "id": "7b1a0f4e-b440-419c-a8c1-8f756c4ff63a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"ideas\": [\n    {\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"caption\": \"string\"\n    },\n    {\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"caption\": \"string\"\n    },\n    {\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"caption\": \"string\"\n    },\n    {\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"caption\": \"string\"\n    },\n    {\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"caption\": \"string\"\n    },\n    {\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"caption\": \"string\"\n    },\n    {\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"caption\": \"string\"\n    },\n    {\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"caption\": \"string\"\n    },\n    {\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"caption\": \"string\"\n    },\n    {\n      \"title\": \"string\",\n      \"description\": \"string\",\n      \"caption\": \"string\"\n    }\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        420,
+        320
+      ],
+      "id": "1bf0eb80-19bc-486c-a822-fc531fc6a2cc",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.together.xyz/v1/images/generations",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"black-forest-labs/FLUX.1-schnell-Free\",\n  \"prompt\": \"{{ $json.description }}\",\n  \"width\": 1024,\n  \"height\": 768,\n  \"steps\": 4,\n  \"n\": 1,\n  \"response_format\": \"b64_json\",\n  \"stop\": []\n} ",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1280,
+        140
+      ],
+      "id": "8657b16c-145a-44ab-a3ff-e4663be0c748",
+      "name": "img gen",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yjVkEXz1usTK6erA",
+          "name": "Google Gemini(PaLM) Api account 2"
+        },
+        "httpHeaderAuth": {
+          "id": "GquCVhz7IpbCy3Kf",
+          "name": "togetherAi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "key"
+            },
+            {
+              "name": "image",
+              "value": "={{ $json.data[0].b64_json }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1500,
+        120
+      ],
+      "id": "63129987-ec05-46f2-9e99-dc5576c69382",
+      "name": "img url"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.ideas",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        620,
+        200
+      ],
+      "id": "99e29add-f812-4253-8241-9cdafbce7baa",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        840,
+        200
+      ],
+      "id": "d2766cdb-f65c-4e31-9508-4d2ff22968e3",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1gmgLWJHrLIlyOVyIOEIjMMzMwf_scgimUl83-UNuEAo",
+          "mode": "list",
+          "cachedResultName": "Ig post data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gmgLWJHrLIlyOVyIOEIjMMzMwf_scgimUl83-UNuEAo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1TqPjl5FxhCDS3LBqP6BwRjpY1O24-N7ApDbDhrELGa4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Caption": "={{ $('Loop Over Items').item.json.caption }}",
+            "Title": "={{ $('Loop Over Items').item.json.title }}",
+            "Image": "={{ $json.data.url }}",
+            "posted": "to-do"
+          },
+          "matchingColumns": [
+            "Title"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Image",
+              "displayName": "Image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "posted",
+              "displayName": "posted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1720,
+        200
+      ],
+      "id": "fc809ac5-bbb8-4968-a4a3-57ebde649fdf",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "idb5eERPnACZxEaA",
+          "name": "Aliza parsec"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        180,
+        320
+      ],
+      "id": "a6bad24d-11c4-4ff2-bbde-3ceca8743624",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "tWQuG2jQDyuPN4cP",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1060,
+        140
+      ],
+      "id": "3e31880a-567e-4d12-9c03-c60759598c4d",
+      "name": "Wait",
+      "webhookId": "e2a4d498-b7e7-407b-a1f8-81ff55114c84"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -40,
+        60
+      ],
+      "id": "a73b442d-fc14-4a80-b6bf-69cf49c21e56",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1gmgLWJHrLIlyOVyIOEIjMMzMwf_scgimUl83-UNuEAo",
+          "mode": "list",
+          "cachedResultName": "Ig post data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gmgLWJHrLIlyOVyIOEIjMMzMwf_scgimUl83-UNuEAo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gmgLWJHrLIlyOVyIOEIjMMzMwf_scgimUl83-UNuEAo/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "posted",
+              "lookupValue": "to-do"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        180,
+        560
+      ],
+      "id": "d7d855a5-4683-4fbe-8b49-bf5895accc68",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "idb5eERPnACZxEaA",
+          "name": "Aliza parsec"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v22.0/129613958636515?fields=instagram_business_account",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        560
+      ],
+      "id": "7159d44b-1679-41bb-89ff-1ace3eeee351",
+      "name": "Get insta account id",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "EHJyvYYaujDvxAF0",
+          "name": "Instagram page accesstoken"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1gmgLWJHrLIlyOVyIOEIjMMzMwf_scgimUl83-UNuEAo",
+          "mode": "list",
+          "cachedResultName": "Ig post data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gmgLWJHrLIlyOVyIOEIjMMzMwf_scgimUl83-UNuEAo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gmgLWJHrLIlyOVyIOEIjMMzMwf_scgimUl83-UNuEAo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "posted": "done",
+            "row_number": "={{ $('Google Sheets').item.json.row_number }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Caption",
+              "displayName": "Caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image",
+              "displayName": "Image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "posted",
+              "displayName": "posted",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1500,
+        560
+      ],
+      "id": "ab7d7f5e-a9c4-4e7a-91ea-5868fdae9141",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "idb5eERPnACZxEaA",
+          "name": "Aliza parsec"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\n\nconst public_id = $('upload to cloudinary').first().json.public_id;\nconst timestamp = $input.first().json.timestamp;\nconst api_secret = 'D0ouC6vzW5ouMPD8XOKKwOg4D04';\n\nconst to_sign = `public_id=${public_id}&timestamp=${timestamp}${api_secret}`;\nconst signature = crypto.createHash('sha1').update(to_sign).digest('hex');\n\nreturn [{\n  public_id,\n  timestamp,\n  api_key: >your-api-key<,\n  signature,\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1940,
+        560
+      ],
+      "id": "2d1ac3fb-d028-4ead-a1ac-17bade3dc23f",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "473ac5a7-1838-4afc-aa1f-a7c0242f2fa8",
+              "name": "timestamp",
+              "value": "={{ Math.floor(Date.now() / 1000) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1720,
+        560
+      ],
+      "id": "5fa96034-28ca-4364-b82a-63eb9ed9d39e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "={{ $('img download').item.json.instagram_business_account.id }}",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "media_type",
+                "value": "=IMAGE"
+              },
+              {
+                "name": "image_url",
+                "value": "={{ $json.url }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('Google Sheets').item.json.Caption }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        560
+      ],
+      "id": "e49019dd-ad2b-47a3-b7c8-e87f0ccbed24",
+      "name": "setting up insta container",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "EHJyvYYaujDvxAF0",
+          "name": "Instagram page accesstoken"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "={{ $('img download').item.json.instagram_business_account.id }}",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "image_url",
+                "value": "={{ $('upload to cloudinary').item.json.url }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('Google Sheets').item.json.Caption }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        560
+      ],
+      "id": "96639558-d3e9-48b2-b21c-0a65d83ca611",
+      "name": "posting to insta",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "EHJyvYYaujDvxAF0",
+          "name": "Instagram page accesstoken"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Google Sheets').item.json.Image }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        620,
+        560
+      ],
+      "id": "8b46d426-429b-4cf5-9f9e-da6770603613",
+      "name": "img download"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/domi0mxyh/image/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "=file",
+              "value": "={{ $('Google Sheets').item.json.Image }}"
+            },
+            {
+              "name": "api_key"
+            },
+            {
+              "name": "upload_preset",
+              "value": "unsigned_video_upload"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        840,
+        560
+      ],
+      "id": "da812dc6-dcbb-405c-8be4-45b1a220e9ce",
+      "name": "upload to cloudinary"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/domi0mxyh/image/destroy",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "public_id",
+              "value": "={{ $('upload to cloudinary').item.json.public_id }}"
+            },
+            {
+              "name": "api_key",
+              "value": "={{ $json.api_key }}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{ $json.timestamp }}"
+            },
+            {
+              "name": "signature",
+              "value": "={{ $json.signature }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2160,
+        560
+      ],
+      "id": "b1739233-6b9f-4d02-a066-6de910c4c5d9",
+      "name": "delete image from cloudinary"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        520
+      ],
+      "id": "d3f978cc-3f6a-4c33-8225-b14b5dd867c4",
+      "name": "When clicking ‘Test workflow’"
+    }
+  ],
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "img gen": {
+      "main": [
+        [
+          {
+            "node": "img url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "img url": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "img gen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Get insta account id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get insta account id": {
+      "main": [
+        [
+          {
+            "node": "img download",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "delete image from cloudinary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setting up insta container": {
+      "main": [
+        [
+          {
+            "node": "posting to insta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "posting to insta": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "img download": {
+      "main": [
+        [
+          {
+            "node": "upload to cloudinary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload to cloudinary": {
+      "main": [
+        [
+          {
+            "node": "setting up insta container",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9022fab5e98f888acca230e4dbcc338e09adfb5d320403903c6b819ba734e1d"
+  }
+}
