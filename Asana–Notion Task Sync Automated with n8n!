@@ -1,0 +1,303 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json[\"action\"] }}",
+              "value2": "Create"
+            }
+          ]
+        }
+      },
+      "id": "05252e1c-e486-43ef-8793-ea369042ce4e",
+      "name": "Determine create/update",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -1220,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": "={{ $json[\"database_id\"] }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Task|title",
+              "title": "={{ $json[\"name\"] }}"
+            },
+            {
+              "key": "Deadline|date",
+              "date": "={{ $json[\"due_on\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "25894556-aaf4-4884-8c49-b3565632ff84",
+      "name": "Update task",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        -1000,
+        100
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": "6181df20-c949-42e3-9999-7168d746efab",
+        "title": "={{$json[\"name\"]}}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Asana GID|number",
+              "numberValue": "={{ parseInt($json[\"gid\"]) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c21b5312-d550-4460-bcf8-66f97f83c432",
+      "name": "Create task",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        -1000,
+        -100
+      ],
+      "executeOnce": true,
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $json[\"gid\"] }}"
+      },
+      "id": "30a3a940-a7e2-4b2f-b507-1635c2817596",
+      "name": "Get tasks",
+      "type": "n8n-nodes-base.asana",
+      "position": [
+        -1880,
+        0
+      ],
+      "typeVersion": 1,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": "6181df20-c949-42e3-9999-7168d746efab",
+        "filterType": "json",
+        "filterJson": "={{$node[\"Get unique tasks\"].json[\"notionfilter\"]}}",
+        "options": {}
+      },
+      "id": "fcafa03b-aa04-4536-9114-406e56bbebcb",
+      "name": "Find tasks",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        -1660,
+        -75
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "functionCode": "const gids = [];\n\n// get all the unique Asana task gids\nfor (item of items) {\n  var gid = parseInt(item.json.resource.gid);\n  var resource_type = item.json.resource.resource_type;\n  if (!(gids.includes(gid)) && resource_type == \"task\") {\n    gids.push(gid);\n  }\n}\n\n// show in output\nconst new_items = [];\nfor (gid of gids) {\n  var new_item = {\n    \"json\": {\n      \"gid\": 0,\n      \"gids\": [],\n      \"notionfilter\": \"\"\n    }\n  };\n  new_item = JSON.stringify(new_item);\n  new_item = JSON.parse(new_item);\n  new_item.json.gid = gid;\n  new_item.json.gids = gids;\n  new_items.push(new_item);\n\n  // Notion filter\n  notionfilter = {\n    or: [],\n  }\n\n  for (gid of gids) {\n    const filter = {\n      property: 'Asana GID',\n      number: {\n        equals: gid\n      }\n    }\n    notionfilter[\"or\"].push(filter);\n  }\n\n\n  new_item.json.notionfilter = JSON.stringify(notionfilter); \n}\n\nconsole.log(gids);\nreturn new_items;"
+      },
+      "id": "3fdcb684-0587-45c5-9972-734f35d96c2e",
+      "name": "Get unique tasks",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        -2100,
+        0
+      ],
+      "executeOnce": false,
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "functionCode": "const gids_to_update = [];\nconst database_ids = [];\n\nfor (item of $items(\"Find tasks\")) {\n  gids_to_update.push(parseInt(item.json.property_asana_gid));\n  database_ids.push(item.json.id);\n}\nconsole.log(gids_to_update);\nconsole.log(database_ids);\n\nvar gid;\nlet i = 0;\nfor (item of $items(\"Get tasks\")) {\n  gid = parseInt(item.json.gid);\n  if (gids_to_update.includes(gid)) {\n    item.json.action = \"Update\"\n    item.json.database_id = database_ids[i];\n  } else {\n    item.json.action = \"Create\"\n  }\n  i++;\n}\n\nreturn $items(\"Get tasks\");"
+      },
+      "id": "50327519-920d-457c-8a4b-9a28e4e83247",
+      "name": "Determine",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        -1440,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $node[\"Determine\"].json[\"due_on\"] }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "7402221c-dd5f-4740-a281-a9f71bf3d19a",
+      "name": "Check required fields exist",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -780,
+        -100
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": "={{ $json[\"id\"] }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Deadline|date",
+              "date": "={{ $node[\"Determine\"].json[\"due_on\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9a152712-b2cf-4d46-bff1-a11d8e5e71cb",
+      "name": "Update deadline",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        -560,
+        -100
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "resource": "1202718722261680",
+        "workspace": "1177253494675264"
+      },
+      "id": "3c2b31d1-c522-4382-a63d-c8e9f5e2c07b",
+      "name": "On update",
+      "type": "n8n-nodes-base.asanaTrigger",
+      "position": [
+        -2320,
+        0
+      ],
+      "webhookId": "61055fe2-63c7-4b93-adcb-ddb7556c3060",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Determine create/update": {
+      "main": [
+        [
+          {
+            "node": "Create task",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create task": {
+      "main": [
+        [
+          {
+            "node": "Check required fields exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get tasks": {
+      "main": [
+        [
+          {
+            "node": "Find tasks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Determine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find tasks": {
+      "main": [
+        [
+          {
+            "node": "Determine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get unique tasks": {
+      "main": [
+        [
+          {
+            "node": "Get tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determine": {
+      "main": [
+        [
+          {
+            "node": "Determine create/update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check required fields exist": {
+      "main": [
+        [
+          {
+            "node": "Update deadline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On update": {
+      "main": [
+        [
+          {
+            "node": "Get unique tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9022fab5e98f888acca230e4dbcc338e09adfb5d320403903c6b819ba734e1d"
+  }
+}
